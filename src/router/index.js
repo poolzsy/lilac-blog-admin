@@ -17,6 +17,11 @@ const routes = [
         component: () => import('../views/index.vue'),
         meta: { title: '首页', icon: 'HomeFilled' }
       },
+      {
+        path: 'editor',
+        name: 'Editor',
+        component: () => import('../views/editor/Edit.vue'),
+      }
     ]
   },  
   {
