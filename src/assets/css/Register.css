@@ -1,0 +1,105 @@
+.register-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+    background-image: url("@/assets/imgs/background.jpeg");
+    background-size: cover;
+    background-position: center;
+}
+
+.register-box {
+    width: 420px;
+    animation: fadeInUp 0.8s ease-in-out;
+}
+
+.register-form-wrapper {
+    padding: 40px;
+    border-radius: 20px;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.title {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 30px;
+    color: #fff;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+.el-form-item {
+    margin-bottom: 25px;
+}
+
+:deep(.el-input__wrapper) {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    border: 1px solid transparent;
+    transition: border-color .3s, background-color .3s;
+}
+
+:deep(.el-input__wrapper:focus-within) {
+    background-color: rgba(255, 255, 255, 0.5) !important;
+    border-color: #409EFF;
+}
+
+:deep(.el-input__inner) {
+    color: #2c3e50;
+    -webkit-text-fill-color: #2c3e50;
+}
+:deep(.el-input__inner:-webkit-autofill) {
+    -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.8) inset !important;
+}
+:deep(.el-input__inner::placeholder) {
+    color: #a8abb2;
+}
+
+.register-button {
+    width: 100%;
+    font-size: 16px;
+    letter-spacing: 2px;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.register-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(64, 158, 255, 0.4);
+}
+
+.login-link {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 14px;
+}
+.login-link span {
+    color: #f0f0f0;
+    margin-right: 5px;
+}
+
+@media (min-width: 992px) {
+    .register-container {
+        justify-content: flex-end;
+        padding-right: 10%;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
