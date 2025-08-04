@@ -45,22 +45,19 @@ const goHome = () => {
     text-align: center;
     position: relative;
     padding: 20px;
-    /* 动画效果，让内容优雅地入场 */
     animation: fadeInUp 1s ease-in-out;
 }
 
-/* 巨大的 404 数字，作为背景装饰 */
 .error-code {
     font-size: 220px;
     font-weight: bold;
-    color: rgba(255, 255, 255, 0.25); /* 半透明，不抢戏 */
+    color: rgba(255, 255, 255, 0.25);
     position: absolute;
     top: 50%;
     left: 50%;
-    /* 关键：使其居中并置于内容底层 */
     transform: translate(-50%, -50%);
     z-index: -1;
-    user-select: none; /* 防止用户选中 */
+    user-select: none; 
 }
 
 .message {

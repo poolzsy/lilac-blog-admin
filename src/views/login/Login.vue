@@ -30,6 +30,11 @@
 import { reactive,ref } from 'vue';
 import { User, Lock } from '@element-plus/icons-vue';
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage, ElLink } from 'element-plus';
+import { useRouter } from 'vue-router';
+import request from '@/utils/request';
+
+const router = useRouter();
+const loading = ref(false);
 
 const formRef = ref();
 
@@ -48,11 +53,12 @@ const rules = {
 const login = () => {
     formRef.value.validate(valid => {
         if (valid) {
-            request.post("/login", data.form).then(res => {
+            loading.value = true;
+            request.post("/user/login", data.form).then(res => {
                 if (res.code === 200) {
                     localStorage.setItem("token", res.data.token);
                     ElMessage.success("登录成功");
-                    router.push("/manager/home");
+                    router.push("/");
                 } else {
                     ElMessage.error(res.data.message || "登录失败，请重试");
                 }
