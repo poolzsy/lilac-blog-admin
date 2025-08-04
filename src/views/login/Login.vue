@@ -67,5 +67,5 @@ const login = () => {
 </script>
 
 <style scoped>
-@import url('../assets/css/Login.css');
+@import url('@/assets/css/Login.css');
 </style>

@@ -1,11 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Layout from '../components/Layout.vue'
+import Layout from '../layouts/Layout.vue'
 
 const routes = [
-  {
-    path: '/login',
-    component: () => import('@/views/Login.vue')
-  },
   {
     path: '/',
     component: Layout,
@@ -20,24 +16,24 @@ const routes = [
       {
         path: 'editor',
         name: 'Editor',
-        component: () => import('../views/editor/Edit.vue'),
+        component: () => import('../views/article/write.vue'),
       }
     ]
   },  
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue')
+    component: () => import('../views/login/Login.vue')
   },
   {
     path: '/register',
     name: 'Register',
-    component: () => import('../views/Register.vue')
+    component: () => import('../views/login/Register.vue')
   },
   {
       path: '/:catchAll(.*)',
       name: '404',
-      component: () => import('../views/404.vue')
+      component: () => import('../views/error/404.vue')
     }
 
 ]
