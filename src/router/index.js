@@ -10,8 +10,8 @@ const routes = [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        component: () => import('../views/index.vue'),
-        meta: { title: '首页', icon: 'HomeFilled' }
+        component: () => import('../views/dashboard/index.vue'),
+        meta: { title: '首页', icon: 'HomeFilled', noPadding: true }
       },
       {
         path: 'editor',
