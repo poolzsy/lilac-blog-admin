@@ -131,7 +131,7 @@ const handleCommand = (command) => {
       router.push('/dashboard');
       break;
     case 'github':
-      window.open('https://github.com/your-repo-url', '_blank'); // 替换成您的项目地址
+      window.open('https://github.com/lilac-blog-admin', '_blank');
       break;
     default:
       break;
