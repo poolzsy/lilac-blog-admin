@@ -30,10 +30,13 @@
 import { reactive,ref } from 'vue';
 import { User, Lock } from '@element-plus/icons-vue';
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage, ElLink } from 'element-plus';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import request from '@/utils/request';
 
 const router = useRouter();
+const route = useRoute();
+const userStore = useUserStore();
 const loading = ref(false);
 
 const formRef = ref();
@@ -54,16 +57,15 @@ const login = () => {
     formRef.value.validate(valid => {
         if (valid) {
             loading.value = true;
-            request.post("/user/login", data.form).then(res => {
-                if (res.code === 200) {
-                    localStorage.setItem("token", res.data.token);
-                    ElMessage.success("登录成功");
-                    router.push("/");
-                } else {
-                    ElMessage.error(res.data.message || "登录失败，请重试");
-                }
+            userStore.login(data.form).then(() => {
+                ElMessage.success("登录成功");
+                // 登录成功后，跳转到之前想去的页面或首页
+                const redirect = route.query.redirect || '/';
+                router.push(redirect);
             }).catch(error => {
-                ElMessage.error("网络错误，请稍后再试");
+                ElMessage.error(error.message || "登录失败，请重试");
+            }).finally(() => {
+                loading.value = false;
             });
         } else {
             ElMessage.error('请填写账号和密码');

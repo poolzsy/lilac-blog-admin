@@ -1,20 +1,25 @@
 import axios from "axios";
 import { ElMessage } from "element-plus";
+import { useUserStore } from '@/stores/user'
 
 // 创建 axios 实例
 const request = axios.create({
-  baseURL: '/api', // 基础路径，会拼接在 url 前面
-  timeout: 10000, // 请求超时时间
+  baseURL: '/api',
+  timeout: 10000,
 });
 
 // 请求拦截器
 request.interceptors.request.use(
   config => {
+    const userStore = useUserStore()
+    // 如果有token，则添加到请求头
+    if (userStore.token) {
+      config.headers['Authorization'] = `Bearer ${userStore.token}`; // 根据后端要求调整格式
+    }
     config.headers['Content-Type'] = 'application/json; charset=utf-8';
     return config;
   },
   error => {
-    // 请求错误时，直接抛出
     console.error("Request Error:", error);
     return Promise.reject(error);
   }
@@ -24,7 +29,6 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     const res = response.data;
-
 
     if (res.code !== 200) {
       ElMessage({
@@ -44,7 +48,7 @@ request.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           ElMessage.error("未授权，请重新登录");
-          // 跳转到登录页等操作
+          userStore.logout()
           break;
         case 403:
           ElMessage.error("禁止访问");
@@ -63,7 +67,7 @@ request.interceptors.response.use(
     } else {
       ElMessage.error(error.message);
     }
-    
+
     return Promise.reject(error);
   }
 );
