@@ -5,46 +5,78 @@ import { constantRoutes } from '@/router'
 
 const modules = import.meta.glob('../views/**/*.vue')
 export const loadView = (view) => {
-  return modules[`../views/${view}.vue`]
+  if (!view) {
+    return () => import('@/views/error/404.vue');
+  }
+  const path = `../views/${view}.vue`;
+  if (modules[path]) {
+    return modules[path];
+  } else {
+    return () => import('@/views/error/404.vue');
+  }
 }
 
-function transformRoutes(backendRoutes, parentPath = '') {
-  return backendRoutes.map(route => {
-    let currentPath;
+function transformRoutes(backendRoutes, isTopLevel = true) {
+  const newRoutes = [];
 
-    if (parentPath) {
-      currentPath = `${parentPath}/${route.path}`;
+  backendRoutes.forEach(route => {
+    if (!route.type || !['M', 'C'].includes(route.type)) {
+      return;
+    }
+
+    const currentPath = isTopLevel ? (route.path.startsWith('/') ? route.path : `/${route.path}`) : route.path;
+    let newRoute;
+
+    if (isTopLevel) {
+      newRoute = {
+        path: currentPath,
+        component: () => import('@/layouts/Layout.vue'),
+        redirect: undefined,
+        meta: {
+          title: route.menuName,
+          icon: route.icon,
+        },
+        children: []
+      };
+
+      if (route.type === 'M') {
+        const children = transformRoutes(route.children, false);
+        if (children.length > 0) {
+          newRoute.children = children;
+          newRoute.redirect = `${currentPath}/${children[0].path}`;
+        }
+      } else if (route.type === 'C') {
+        const childRoute = {
+          path: '',
+          component: loadView(route.component),
+          name: route.path.replace(/[\/:]/g, '-'),
+          meta: {
+            title: route.menuName,
+            icon: route.icon,
+            perms: route.perms
+          }
+        };
+        newRoute.children.push(childRoute);
+      }
     } else {
-      currentPath = route.path.startsWith('/') ? route.path : `/${route.path}`;
+      newRoute = {
+        path: currentPath,
+        component: loadView(route.component),
+        name: route.path.replace(/[\/:]/g, '-'),
+        meta: {
+          title: route.menuName,
+          icon: route.icon,
+          perms: route.perms
+        }
+      };
     }
 
-    const newRoute = {
-      path: currentPath,
-      name: route.name || currentPath.replace(/\//g, '-').substring(1) || 'default-name-' + Math.random(),
-      component: route.component === 'Layout'
-        ? () => import('@/layouts/Layout.vue')
-        : route.component ? loadView(route.component) : null,
-      meta: {
-        title: route.menuName,
-        icon: route.icon,
-      },
-      children: []
+    if (newRoute) {
+      newRoutes.push(newRoute);
     }
+  });
 
-    // 如果 component 为空，可能是个目录，不需要添加到路由中，但需要处理其子节点
-    if (!newRoute.component && route.type === 'M') {
-      console.warn(`目录 '${route.menuName}' (path: '${route.path}') 没有设置 component，将只作为菜单分组显示。`)
-      // 在一些UI库中，没有 component 的路由可能无法正常工作。
-      // 一个常见的做法是给它一个空的或通用的父路由组件。
-      // 但这里我们暂时跳过，只处理子路由。
-    }
-
-    if (route.children && route.children.length > 0) {
-      newRoute.children = transformRoutes(route.children, newRoute.path);
-    }
-
-    return newRoute
-  })
+  return newRoutes;
 }
 
 export const usePermissionStore = defineStore('permission', () => {
@@ -54,18 +86,14 @@ export const usePermissionStore = defineStore('permission', () => {
   async function generateRoutes() {
     try {
       const res = await request.get('/user/getRouters');
-
-      console.log(res.data);
-
       const backendRoutes = res.data && res.data.menus ? res.data.menus : [];
+
       if (!Array.isArray(backendRoutes)) {
         console.error("后端返回的路由数据格式不正确，期望 'data.menus' 是一个数组!");
         return [];
       }
 
       const accessedRoutes = transformRoutes(backendRoutes);
-
-      console.log(accessedRoutes);
 
       dynamicRoutes.value = accessedRoutes;
       routes.value = constantRoutes.concat(accessedRoutes);

@@ -1,12 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import request from '@/utils/request'
-import { useRouter } from 'vue-router'
+import { usePermissionStore } from './permission'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref(localStorage.getItem('token') || '')
   const userInfo = ref({})
-  const router = useRouter()
 
   // 登录
   async function login(loginData) {
@@ -29,11 +28,14 @@ export const useUserStore = defineStore('user', () => {
 
   // 登出
   function logout() {
+    const permissionStore = usePermissionStore();
+
     token.value = ''
     userInfo.value = {}
     localStorage.removeItem('token')
-    // 登出后重定向到登录页
-    router.push('/login')
+
+    permissionStore.dynamicRoutes = []
+    permissionStore.routes = []
   }
 
   return { token, userInfo, login, getInfo, logout }

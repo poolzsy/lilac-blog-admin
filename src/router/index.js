@@ -26,12 +26,14 @@ export const constantRoutes = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('../views/dashboard/index.vue'),
-      meta: { title: '首页', icon: 'dashboard', affix: true }
-    }]
+    children: [
+      {
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('../views/dashboard/index.vue'),
+        meta: { title: '首页', icon: 'dashboard', affix: true }
+      }
+    ]
   }
 ]
 
