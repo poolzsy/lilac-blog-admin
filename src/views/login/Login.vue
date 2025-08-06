@@ -32,11 +32,13 @@ import { User, Lock } from '@element-plus/icons-vue';
 import { ElForm, ElFormItem, ElInput, ElButton, ElMessage, ElLink } from 'element-plus';
 import { useRouter, useRoute } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import { usePermissionStore } from '@/stores/permission';
 import request from '@/utils/request';
 
 const router = useRouter();
 const route = useRoute();
 const userStore = useUserStore();
+const permissionStore = usePermissionStore();
 const loading = ref(false);
 
 const formRef = ref();
@@ -58,12 +60,24 @@ const login = () => {
         if (valid) {
             loading.value = true;
             userStore.login(data.form).then(() => {
+                // 登录成功后，主动调用 permissionStore 的方法来生成路由
+                return permissionStore.generateRoutes();
+            }).then(accessRoutes => {
+                // 将获取到的动态路由添加到 router 实例中
+                accessRoutes.forEach(route => {
+                    router.addRoute(route);
+                });
+                
+                // 添加 404 页面，确保它在所有动态路由之后
+                router.addRoute({ path: '/:catchAll(.*)', redirect: '/404', hidden: true });
+ 
+                // 所有路由都准备好之后，再进行跳转
                 ElMessage.success("登录成功");
-                // 登录成功后，跳转到之前想去的页面或首页
                 const redirect = route.query.redirect || '/';
                 router.push(redirect);
+ 
             }).catch(error => {
-                ElMessage.error(error.message || "登录失败，请重试");
+                ElMessage.error(error.message || "登录或获取权限失败，请重试");
             }).finally(() => {
                 loading.value = false;
             });

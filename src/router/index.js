@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { usePermissionStore } from '@/stores/permission'
+import Layout from '@/layouts/Layout.vue'
 
 export const constantRoutes = [
   {
@@ -21,16 +22,22 @@ export const constantRoutes = [
     component: () => import('../views/error/404.vue'),
     hidden: true
   },
-  { 
+  {
     path: '/',
+    component: Layout,
     redirect: '/dashboard',
-    hidden: true
+    children: [{
+      path: 'dashboard',
+      name: 'Dashboard',
+      component: () => import('../views/dashboard/index.vue'),
+      meta: { title: '首页', icon: 'dashboard', affix: true }
+    }]
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: constantRoutes // 初始只挂载静态路由
+  routes: constantRoutes
 })
 
 // 白名单：不需要登录即可访问的路径
